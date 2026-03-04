@@ -14,7 +14,12 @@ export function AuthPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    await signIn(email)
+    const { error } = await signIn(email)
+    if (error) {
+      alert(error.message) // simple error display for now
+      setLoading(false)
+      return
+    }
     setSent(true)
     setLoading(false)
   }

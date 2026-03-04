@@ -14,12 +14,15 @@ export function HomePage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (user) {
-      listMyEvents(user.id).then(e => {
+    if (!user) return
+    let cancelled = false
+    listMyEvents(user.id).then(e => {
+      if (!cancelled) {
         setEvents(e)
         setLoading(false)
-      })
-    }
+      }
+    })
+    return () => { cancelled = true }
   }, [user?.id])
 
   return (

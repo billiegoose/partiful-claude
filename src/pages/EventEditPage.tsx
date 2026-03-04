@@ -44,9 +44,13 @@ export function EventEditPage() {
 
   useEffect(() => {
     if (!isNew && token) {
-      getEvent(token).then(e => { if (e) setEvent(e) })
+      getEvent(token).then(e => {
+        if (!e) { navigate('/'); return }
+        if (user && e.host_id !== user.id) { navigate(`/e/${token}`); return }
+        setEvent(e)
+      })
     }
-  }, [token, isNew])
+  }, [token, isNew, user?.id])
 
   const set = (patch: Partial<Event>) => setEvent(prev => ({ ...prev, ...patch }))
 
@@ -165,15 +169,19 @@ export function EventEditPage() {
           <span className="text-zinc-300 text-sm">Allow plus ones</span>
           <button
             onClick={() => set({ is_plus_ones_allowed: !event.is_plus_ones_allowed })}
-            className={[
-              'w-12 h-6 rounded-full transition-colors relative',
-              event.is_plus_ones_allowed ? 'bg-white' : 'bg-zinc-700',
-            ].join(' ')}
+            aria-checked={!!event.is_plus_ones_allowed}
+            role="switch"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <span className={[
-              'absolute top-0.5 w-5 h-5 rounded-full bg-black transition-transform',
-              event.is_plus_ones_allowed ? 'translate-x-6' : 'translate-x-0.5',
-            ].join(' ')} />
+              'w-12 h-6 rounded-full transition-colors relative block',
+              event.is_plus_ones_allowed ? 'bg-white' : 'bg-zinc-700',
+            ].join(' ')}>
+              <span className={[
+                'absolute top-0.5 w-5 h-5 rounded-full bg-black transition-transform',
+                event.is_plus_ones_allowed ? 'translate-x-6' : 'translate-x-0.5',
+              ].join(' ')} />
+            </span>
           </button>
         </div>
 
