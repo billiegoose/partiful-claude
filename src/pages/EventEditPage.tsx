@@ -31,6 +31,7 @@ export function EventEditPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
+  const [authChecked, setAuthChecked] = useState(isNew) // new events skip the check
   const [event, setEvent] = useState<Partial<Event>>({
     title: '',
     description: '',
@@ -48,6 +49,7 @@ export function EventEditPage() {
         if (!e) { navigate('/'); return }
         if (user && e.host_id !== user.id) { navigate(`/e/${token}`); return }
         setEvent(e)
+        setAuthChecked(true)
       })
     }
   }, [token, isNew, user?.id])
@@ -87,6 +89,10 @@ export function EventEditPage() {
       setSaving(false)
     }
   }
+
+  if (!authChecked) return (
+    <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>
+  )
 
   return (
     <div className="min-h-screen bg-black text-white pb-24">
