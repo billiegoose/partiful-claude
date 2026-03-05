@@ -7,22 +7,31 @@ const supabase = createClient<Database>(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-export async function seedFakeRsvps(eventId: string, hostId: string) {
+// Pre-created fake guest accounts in Supabase auth (required for FK constraint on rsvps.user_id)
+export const FAKE_GUEST_IDS = [
+  '5b4c25d3-d105-47e8-add5-c49079bd37d9', // e2e-guest-1@partiful-claude.test
+  'f842cfbd-588f-49e4-9fc0-610266bd7537', // e2e-guest-2@partiful-claude.test
+  '2152217a-fdb6-426f-a6a5-40c4a79533b1', // e2e-guest-3@partiful-claude.test
+]
+
+export async function seedFakeRsvps(eventId: string) {
   const fakeRsvps = [
-    { event_id: eventId, user_id: `00000000-0000-0000-0001-000000000001`, status: 'yes' as const },
-    { event_id: eventId, user_id: `00000000-0000-0000-0001-000000000002`, status: 'yes' as const },
-    { event_id: eventId, user_id: `00000000-0000-0000-0001-000000000003`, status: 'maybe' as const },
+    { event_id: eventId, user_id: FAKE_GUEST_IDS[0], status: 'yes' as const },
+    { event_id: eventId, user_id: FAKE_GUEST_IDS[1], status: 'yes' as const },
+    { event_id: eventId, user_id: FAKE_GUEST_IDS[2], status: 'maybe' as const },
   ]
-  await supabase.from('rsvps').upsert(fakeRsvps)
+  const { error } = await supabase.from('rsvps').upsert(fakeRsvps)
+  if (error) throw new Error(`seedFakeRsvps failed: ${error.message}`)
 }
 
-export async function seedFakeBoop(eventId: string, senderId: string, recipientId: string) {
-  await supabase.from('boops').insert({
+export async function seedFakeBoop(eventId: string, recipientId: string) {
+  const { error } = await supabase.from('boops').insert({
     event_id: eventId,
-    sender_id: senderId,
+    sender_id: FAKE_GUEST_IDS[0],
     recipient_id: recipientId,
     emoji: '🎉',
   })
+  if (error) throw new Error(`seedFakeBoop failed: ${error.message}`)
 }
 
 export async function cleanupEvent(eventId: string) {

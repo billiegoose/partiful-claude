@@ -6,7 +6,7 @@ export default defineConfig({
     baseURL: 'http://localhost:4173',
     viewport: { width: 390, height: 844 }, // iPhone 14 Pro
     screenshot: 'on',
-    video: 'retain-on-failure',
+    video: 'on',
   },
   webServer: {
     command: 'npm run preview',
