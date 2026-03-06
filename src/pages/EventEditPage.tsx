@@ -198,8 +198,12 @@ export function EventEditPage() {
           <Input
             type="number"
             min={1}
+            step={1}
             value={event.max_capacity ?? ''}
-            onChange={e => set({ max_capacity: e.target.value ? Number(e.target.value) : null })}
+            onChange={e => {
+              const val = e.target.value ? Math.max(1, Math.floor(Number(e.target.value))) : null
+              set({ max_capacity: val })
+            }}
             className="bg-zinc-900 border-zinc-700 text-white h-12"
             placeholder="Unlimited"
           />

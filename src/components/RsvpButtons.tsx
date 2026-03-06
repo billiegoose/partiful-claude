@@ -22,8 +22,8 @@ export function RsvpButtons({ style, current, onRespond, isFull }: Props) {
         return (
           <motion.button
             key={status}
-            whileTap={{ scale: 0.92 }}
-            whileHover={{ scale: 1.04 }}
+            whileTap={disabledByFull ? undefined : { scale: 0.92 }}
+            whileHover={disabledByFull ? undefined : { scale: 1.04 }}
             onClick={() => !disabledByFull && onRespond(status)}
             disabled={disabledByFull}
             className={[
