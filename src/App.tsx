@@ -4,6 +4,7 @@ import { AuthPage } from './pages/AuthPage'
 import { EventPage } from './pages/EventPage'
 import { HomePage } from './pages/HomePage'
 import { EventEditPage } from './pages/EventEditPage'
+import { ProfilePage } from './pages/ProfilePage'
 import { RequireAuth } from './components/RequireAuth'
 import { BottomNav } from './components/BottomNav'
 import { useAuth } from './hooks/useAuth'
@@ -21,7 +22,7 @@ export default function App() {
           <Route path="/" element={<RequireAuth><HomePage /></RequireAuth>} />
           <Route path="/e/:token" element={<EventPage />} />
           <Route path="/e/:token/edit" element={<RequireAuth><EventEditPage /></RequireAuth>} />
-          <Route path="/profile" element={<RequireAuth><div className="text-white p-4 bg-black min-h-screen">Profile coming soon</div></RequireAuth>} />
+          <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
         </Routes>
       </AnimatePresence>
       {showNav && <BottomNav />}
