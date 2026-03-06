@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { getEvent } from '../sdk/events'
-import { listRsvpsForEvent } from '../sdk/rsvps'
+import { listRsvpsWithProfiles } from '../sdk/rsvps'
 import { subscribeToRsvps } from '../sdk/realtime'
-import type { Event, Rsvp } from '../sdk/types'
+import type { Event, RsvpWithProfile } from '../sdk/types'
 
 export function useEvent(token: string) {
   const [event, setEvent] = useState<Event | null>(null)
-  const [rsvps, setRsvps] = useState<Rsvp[]>([])
+  const [rsvps, setRsvps] = useState<RsvpWithProfile[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export function useEvent(token: string) {
       if (cancelled) return
       setEvent(evt)
       if (evt) {
-        const r = await listRsvpsForEvent(evt.id)
+        const r = await listRsvpsWithProfiles(evt.id)
         if (!cancelled) setRsvps(r)
       }
       setLoading(false)
@@ -31,9 +31,9 @@ export function useEvent(token: string) {
       event.id,
       (rsvp) => setRsvps(prev => {
         const without = prev.filter(r => r.id !== rsvp.id)
-        return [...without, rsvp]
+        return [...without, { ...rsvp, profiles: null }]
       }),
-      (rsvp) => setRsvps(prev => prev.map(r => r.id === rsvp.id ? rsvp : r))
+      (rsvp) => setRsvps(prev => prev.map(r => r.id === rsvp.id ? { ...rsvp, profiles: r.profiles } : r))
     )
     return () => { channel.unsubscribe() }
   }, [event?.id])

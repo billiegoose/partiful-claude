@@ -1,5 +1,5 @@
 import { supabase } from '../supabase'
-import type { Rsvp, RsvpInsert } from './types'
+import type { Rsvp, RsvpInsert, RsvpWithProfile } from './types'
 
 export async function upsertRsvp(rsvp: RsvpInsert): Promise<Rsvp> {
   const { data, error } = await supabase
@@ -29,6 +29,15 @@ export async function getMyRsvp(eventId: string, userId: string): Promise<Rsvp |
     .single()
   if (error) return null
   return data
+}
+
+export async function listRsvpsWithProfiles(eventId: string): Promise<RsvpWithProfile[]> {
+  const { data, error } = await supabase
+    .from('rsvps')
+    .select('*, profiles(username, avatar_url)')
+    .eq('event_id', eventId)
+  if (error) return []
+  return (data ?? []) as unknown as RsvpWithProfile[]
 }
 
 export async function deleteRsvp(eventId: string, userId: string): Promise<void> {

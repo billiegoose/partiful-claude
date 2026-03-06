@@ -355,3 +355,7 @@ export type Boop = Database['public']['Tables']['boops']['Row']
 export type BoopInsert = Database['public']['Tables']['boops']['Insert']
 export type RsvpStatus = 'yes' | 'no' | 'maybe'
 export type RsvpButtonStyle = 'default' | 'emoji' | 'spooky' | 'flirty' | 'formal' | 'hype' | 'icons'
+
+export type RsvpWithProfile = Rsvp & {
+  profiles: Pick<Profile, 'username' | 'avatar_url'> | null
+}
