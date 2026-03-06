@@ -82,6 +82,7 @@ function GuestChip({
       layout
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
       className="flex flex-col items-center gap-1 min-w-[56px]"
     >
       {canBoop ? (
@@ -119,12 +120,14 @@ function BoopButton({
       </button>
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 4 }}
-            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-zinc-800 rounded-2xl p-2 flex gap-1 z-50 shadow-xl"
-          >
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 4 }}
+              className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-zinc-800 rounded-2xl p-2 flex gap-1 z-50 shadow-xl"
+            >
             {BOOP_EMOJIS.map(emoji => (
               <button
                 key={emoji}
@@ -135,6 +138,7 @@ function BoopButton({
               </button>
             ))}
           </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
