@@ -32,6 +32,8 @@ export function ProfilePage() {
     try {
       const updated = await updateProfile(user.id, { username })
       setProfile(updated)
+    } catch {
+      alert('Save failed. Please try again.')
     } finally {
       setSaving(false)
     }
@@ -53,6 +55,7 @@ export function ProfilePage() {
       const url = await uploadAvatar(file, user.id)
       const updated = await updateProfile(user.id, { avatar_url: url })
       setProfile(updated)
+      e.target.value = ''
     } catch {
       alert('Upload failed. Please try again.')
     } finally {
