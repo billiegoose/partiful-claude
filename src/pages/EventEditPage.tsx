@@ -32,6 +32,7 @@ export function EventEditPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const pendingEventIdRef = useRef<string>(crypto.randomUUID())
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [authChecked, setAuthChecked] = useState(isNew) // new events skip the check
@@ -62,10 +63,18 @@ export function EventEditPage() {
   const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file || !user) return
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file.')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image must be under 10 MB.')
+      return
+    }
     setUploading(true)
     try {
-      // Use event.id if editing, or a temp UUID if new
-      const id = event.id ?? crypto.randomUUID()
+      // Use event.id if editing, or the stable pending UUID if new
+      const id = event.id ?? pendingEventIdRef.current
       const url = await uploadEventCover(file, user.id, id)
       set({ cover_image_url: url })
     } catch {
@@ -91,6 +100,7 @@ export function EventEditPage() {
           show_guest_list: event.show_guest_list,
           is_plus_ones_allowed: event.is_plus_ones_allowed,
           max_capacity: event.max_capacity ?? null,
+          cover_image_url: event.cover_image_url ?? null,
         })
         navigate(`/e/${created.invite_link_token}`)
       } else if (event.id) {
@@ -103,6 +113,7 @@ export function EventEditPage() {
           show_guest_list: event.show_guest_list,
           is_plus_ones_allowed: event.is_plus_ones_allowed,
           max_capacity: event.max_capacity ?? null,
+          cover_image_url: event.cover_image_url ?? null,
         })
         navigate(`/e/${token}`)
       }
@@ -141,7 +152,7 @@ export function EventEditPage() {
             {event.cover_image_url ? (
               <img src={event.cover_image_url} alt="Cover" className="w-full h-full object-cover" />
             ) : (
-              <span className="text-zinc-500 text-sm">{uploading ? 'Uploading...' : '+ Add cover photo'}</span>
+              <span className="text-zinc-500 text-sm">+ Add cover photo</span>
             )}
             {uploading && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-sm">

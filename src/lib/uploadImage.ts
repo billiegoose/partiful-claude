@@ -5,7 +5,8 @@ export async function uploadEventCover(
   userId: string,
   eventId: string
 ): Promise<string> {
-  const ext = file.name.split('.').pop() ?? 'jpg'
+  const rawExt = file.name.split('.').pop()?.toLowerCase() ?? ''
+  const ext = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'].includes(rawExt) ? rawExt : 'jpg'
   const path = `${userId}/${eventId}.${ext}`
   const { error } = await supabase.storage
     .from('event-covers')
@@ -16,7 +17,8 @@ export async function uploadEventCover(
 }
 
 export async function uploadAvatar(file: File, userId: string): Promise<string> {
-  const ext = file.name.split('.').pop() ?? 'jpg'
+  const rawExt = file.name.split('.').pop()?.toLowerCase() ?? ''
+  const ext = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'].includes(rawExt) ? rawExt : 'jpg'
   const path = `${userId}/avatar.${ext}`
   const { error } = await supabase.storage
     .from('avatars')
