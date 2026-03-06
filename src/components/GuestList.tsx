@@ -31,7 +31,6 @@ function Avatar({ username, avatarUrl }: { username: string | null; avatarUrl: s
 
 export function GuestList({ rsvps, eventId, viewerUserId }: Props) {
   const goingRsvps = rsvps.filter(r => r.status === 'yes')
-  if (goingRsvps.length === 0) return null
 
   const handleBoop = async (recipientId: string, emoji: string) => {
     if (!viewerUserId) return
@@ -41,6 +40,8 @@ export function GuestList({ rsvps, eventId, viewerUserId }: Props) {
       // silently ignore — boop is fun, not critical
     }
   }
+
+  if (goingRsvps.length === 0) return null
 
   return (
     <div className="space-y-3">
@@ -115,7 +116,12 @@ function BoopButton({
 
   return (
     <div className="relative">
-      <button onClick={() => setOpen(o => !o)} className="focus:outline-none">
+      <button
+        onClick={() => setOpen(o => !o)}
+        onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false) }}
+        aria-label={`Boop ${username}`}
+        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-full"
+      >
         <Avatar username={username} avatarUrl={avatarUrl} />
       </button>
       <AnimatePresence>
@@ -127,6 +133,7 @@ function BoopButton({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.8, y: 4 }}
               className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-zinc-800 rounded-2xl p-2 flex gap-1 z-50 shadow-xl"
+              onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false) }}
             >
             {BOOP_EMOJIS.map(emoji => (
               <button
