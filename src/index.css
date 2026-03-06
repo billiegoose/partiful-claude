@@ -78,6 +78,17 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+    /* ── Partiful design tokens ── */
+    --p-bg: #0a0a0f;
+    --p-card: #13131a;
+    --p-card2: #1a1a24;
+    --p-accent: #ff3c6e;
+    --p-accent2: #ff8c42;
+    --p-purple: #9b5cf6;
+    --p-text: #f0eeff;
+    --p-muted: #888899;
+    --p-border: rgba(255, 255, 255, 0.08);
+    --p-glow: rgba(155, 92, 246, 0.25);
 }
 
 .dark {
@@ -118,23 +129,6 @@
   * {
     @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
-    }
-}
-
-/* ── Partiful design tokens ── */
-:root {
-  --p-bg: #0a0a0f;
-  --p-card: #13131a;
-  --p-card2: #1a1a24;
-  --p-accent: #ff3c6e;
-  --p-accent2: #ff8c42;
-  --p-purple: #9b5cf6;
-  --p-text: #f0eeff;
-  --p-muted: #888899;
-  --p-border: rgba(255, 255, 255, 0.08);
-  --p-glow: rgba(155, 92, 246, 0.25);
 }
 
 /* ── Keyframes ── */
