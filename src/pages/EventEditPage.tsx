@@ -71,6 +71,7 @@ export function EventEditPage() {
           visibility: event.visibility,
           show_guest_list: event.show_guest_list,
           is_plus_ones_allowed: event.is_plus_ones_allowed,
+          max_capacity: event.max_capacity ?? null,
         })
         navigate(`/e/${created.invite_link_token}`)
       } else if (event.id) {
@@ -82,6 +83,7 @@ export function EventEditPage() {
           rsvp_button_style: event.rsvp_button_style,
           show_guest_list: event.show_guest_list,
           is_plus_ones_allowed: event.is_plus_ones_allowed,
+          max_capacity: event.max_capacity ?? null,
         })
         navigate(`/e/${token}`)
       }
@@ -189,6 +191,18 @@ export function EventEditPage() {
               ].join(' ')} />
             </span>
           </button>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-zinc-300">Max guests (optional)</Label>
+          <Input
+            type="number"
+            min={1}
+            value={event.max_capacity ?? ''}
+            onChange={e => set({ max_capacity: e.target.value ? Number(e.target.value) : null })}
+            className="bg-zinc-900 border-zinc-700 text-white h-12"
+            placeholder="Unlimited"
+          />
         </div>
 
         <Button

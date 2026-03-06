@@ -31,6 +31,11 @@ export function EventPage() {
     respond(status)
   }
 
+  const isFull = event != null
+    && event.max_capacity != null
+    && yesCount >= event.max_capacity
+    && rsvp?.status !== 'yes'
+
   const bgStyle = event.background_color
     ? { backgroundColor: event.background_color }
     : undefined
@@ -95,6 +100,7 @@ export function EventPage() {
           style={(event.rsvp_button_style as RsvpButtonStyle) ?? 'default'}
           current={rsvp?.status as RsvpStatus ?? null}
           onRespond={handleRespond}
+          isFull={isFull}
         />
 
         {user?.id === event.host_id && (
