@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { getEvent, createEvent, updateEvent } from '../sdk/events'
@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import type { Event, RsvpButtonStyle } from '../sdk/types'
+import { uploadEventCover } from '../lib/uploadImage'
 
 const RSVP_STYLES: { value: RsvpButtonStyle; label: string }[] = [
   { value: 'default', label: 'Default' },
@@ -30,6 +31,8 @@ export function EventEditPage() {
   const isNew = token === 'new'
   const { user } = useAuth()
   const navigate = useNavigate()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [authChecked, setAuthChecked] = useState(isNew) // new events skip the check
   const [event, setEvent] = useState<Partial<Event>>({
@@ -55,6 +58,22 @@ export function EventEditPage() {
   }, [token, isNew, user?.id])
 
   const set = (patch: Partial<Event>) => setEvent(prev => ({ ...prev, ...patch }))
+
+  const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !user) return
+    setUploading(true)
+    try {
+      // Use event.id if editing, or a temp UUID if new
+      const id = event.id ?? crypto.randomUUID()
+      const url = await uploadEventCover(file, user.id, id)
+      set({ cover_image_url: url })
+    } catch {
+      alert('Upload failed. Please try again.')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const handleSave = async () => {
     if (!user || !event.title || !event.start_at) return
@@ -109,6 +128,34 @@ export function EventEditPage() {
           <h1 className="text-xl font-bold">
             {isNew ? 'Create event' : 'Edit event'}
           </h1>
+        </div>
+
+        {/* Cover image */}
+        <div className="space-y-2">
+          <Label className="text-zinc-300">Cover photo</Label>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="relative w-full h-40 rounded-xl overflow-hidden bg-zinc-900 border border-zinc-700 flex items-center justify-center min-h-[44px]"
+          >
+            {event.cover_image_url ? (
+              <img src={event.cover_image_url} alt="Cover" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-zinc-500 text-sm">{uploading ? 'Uploading...' : '+ Add cover photo'}</span>
+            )}
+            {uploading && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-sm">
+                Uploading...
+              </div>
+            )}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleCoverChange}
+          />
         </div>
 
         <div className="space-y-2">
