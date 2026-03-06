@@ -19,8 +19,12 @@ export function useAuth() {
     return () => subscription.unsubscribe()
   }, [])
 
+  let emailRedirectTo = window.location.origin;
+  if (emailRedirectTo.endsWith('.github.io')) {
+    emailRedirectTo += '/partiful-claude'
+  }
   const signIn = (email: string) =>
-    supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } })
+    supabase.auth.signInWithOtp({ email, options: { emailRedirectTo } })
 
   const signOut = () => supabase.auth.signOut()
 
