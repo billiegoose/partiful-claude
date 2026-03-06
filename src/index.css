@@ -122,3 +122,84 @@
     @apply bg-background text-foreground;
     }
 }
+
+/* ── Partiful design tokens ── */
+:root {
+  --p-bg: #0a0a0f;
+  --p-card: #13131a;
+  --p-card2: #1a1a24;
+  --p-accent: #ff3c6e;
+  --p-accent2: #ff8c42;
+  --p-purple: #9b5cf6;
+  --p-text: #f0eeff;
+  --p-muted: #888899;
+  --p-border: rgba(255, 255, 255, 0.08);
+  --p-glow: rgba(155, 92, 246, 0.25);
+}
+
+/* ── Keyframes ── */
+@keyframes p-bgPulse {
+  0%   { filter: brightness(1); }
+  100% { filter: brightness(1.15); }
+}
+
+@keyframes p-float {
+  0%, 100% { transform: translate(-50%, -55%) rotate(-3deg); }
+  50%       { transform: translate(-50%, -60%) rotate(3deg); }
+}
+
+@keyframes p-slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes p-pinBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* ── Utility classes ── */
+.p-gradient-text {
+  background: linear-gradient(135deg, #fff 30%, #c4a8ff 70%, #ff8c42 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.p-gradient-btn {
+  background: linear-gradient(135deg, var(--p-accent) 0%, #ff6b35 50%, var(--p-accent2) 100%);
+  box-shadow: 0 4px 30px rgba(255, 60, 110, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.p-gradient-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(255, 60, 110, 0.55);
+}
+
+.p-gradient-btn:active { transform: translateY(0); }
+
+.p-card {
+  background: var(--p-card);
+  border: 1px solid var(--p-border);
+  border-radius: 16px;
+}
+
+.p-card-hover {
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.p-card-hover:hover {
+  border-color: rgba(155, 92, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.font-syne { font-family: 'Syne', sans-serif; }
+.font-dm   { font-family: 'DM Sans', sans-serif; }
+
+/* ── Body base ── */
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--p-bg);
+  color: var(--p-text);
+}
