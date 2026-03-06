@@ -5,13 +5,14 @@ import { useAuth } from '../hooks/useAuth'
 import { useRsvp } from '../hooks/useRsvp'
 import { RsvpButtons } from '../components/RsvpButtons'
 import { ActivityFeed } from '../components/ActivityFeed'
+import { GuestList } from '../components/GuestList'
 import type { RsvpButtonStyle, RsvpStatus } from '../sdk/types'
 
 export function EventPage() {
   const { token } = useParams<{ token: string }>()
   const { user } = useAuth()
   const navigate = useNavigate()
-  const { event, yesCount, maybeCount, loading } = useEvent(token!)
+  const { event, rsvps, yesCount, maybeCount, loading } = useEvent(token!)
   const { rsvp, respond } = useRsvp(event?.id ?? '', user?.id)
 
   if (loading) return (
@@ -78,7 +79,17 @@ export function EventPage() {
             {yesCount} going
           </motion.span>
           {maybeCount > 0 && <span>{maybeCount} maybe</span>}
+          {event.max_capacity != null && yesCount < event.max_capacity && (
+            <span>{event.max_capacity - yesCount} spots left</span>
+          )}
+          {event.max_capacity != null && yesCount >= event.max_capacity && (
+            <span className="text-red-400">Full</span>
+          )}
         </div>
+
+        {event.show_guest_list && (
+          <GuestList rsvps={rsvps} eventId={event.id} viewerUserId={user?.id} />
+        )}
 
         <RsvpButtons
           style={(event.rsvp_button_style as RsvpButtonStyle) ?? 'default'}
