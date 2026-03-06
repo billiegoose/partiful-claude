@@ -251,6 +251,26 @@ export function EventEditPage() {
           </button>
         </div>
 
+        <div className="flex items-center justify-between py-2">
+          <span className="text-zinc-300 text-sm">Show guest list</span>
+          <button
+            onClick={() => set({ show_guest_list: !event.show_guest_list })}
+            aria-checked={!!event.show_guest_list}
+            role="switch"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center"
+          >
+            <span className={[
+              'w-12 h-6 rounded-full transition-colors relative block',
+              event.show_guest_list ? 'bg-white' : 'bg-zinc-700',
+            ].join(' ')}>
+              <span className={[
+                'absolute top-0.5 w-5 h-5 rounded-full bg-black transition-transform',
+                event.show_guest_list ? 'translate-x-6' : 'translate-x-0.5',
+              ].join(' ')} />
+            </span>
+          </button>
+        </div>
+
         <div className="space-y-2">
           <Label className="text-zinc-300">Max guests (optional)</Label>
           <Input
