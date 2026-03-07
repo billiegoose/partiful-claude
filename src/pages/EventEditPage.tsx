@@ -19,6 +19,38 @@ const RSVP_STYLES: { value: RsvpButtonStyle; label: string }[] = [
   { value: 'icons', label: '✓ Icons' },
 ]
 
+function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      onClick={() => onChange(!checked)}
+      aria-checked={checked}
+      role="switch"
+      style={{
+        minHeight: 44, minWidth: 44,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+      }}
+    >
+      <span style={{
+        width: 48, height: 24, borderRadius: 9999,
+        background: checked ? '#8b5cf6' : '#3f3f46',
+        position: 'relative', display: 'block',
+        transition: 'background 0.2s',
+        flexShrink: 0,
+      }}>
+        <span style={{
+          position: 'absolute',
+          top: 2, left: checked ? 26 : 2,
+          width: 20, height: 20,
+          borderRadius: '50%',
+          background: 'white',
+          transition: 'left 0.2s',
+        }} />
+      </span>
+    </button>
+  )
+}
+
 function toLocalDatetimeValue(isoString: string | null | undefined): string {
   if (!isoString) return ''
   const d = new Date(isoString)
@@ -233,42 +265,12 @@ export function EventEditPage() {
 
         <div className="flex items-center justify-between py-2">
           <span className="text-zinc-300 text-sm">Allow plus ones</span>
-          <button
-            onClick={() => set({ is_plus_ones_allowed: !event.is_plus_ones_allowed })}
-            aria-checked={!!event.is_plus_ones_allowed}
-            role="switch"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center"
-          >
-            <span className={[
-              'w-12 h-6 rounded-full transition-colors relative block',
-              event.is_plus_ones_allowed ? 'bg-violet-500' : 'bg-zinc-700',
-            ].join(' ')}>
-              <span className={[
-                'absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform',
-                event.is_plus_ones_allowed ? 'translate-x-6' : 'translate-x-0.5',
-              ].join(' ')} />
-            </span>
-          </button>
+          <Toggle checked={!!event.is_plus_ones_allowed} onChange={v => set({ is_plus_ones_allowed: v })} />
         </div>
 
         <div className="flex items-center justify-between py-2">
           <span className="text-zinc-300 text-sm">Show guest list</span>
-          <button
-            onClick={() => set({ show_guest_list: !event.show_guest_list })}
-            aria-checked={!!event.show_guest_list}
-            role="switch"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center"
-          >
-            <span className={[
-              'w-12 h-6 rounded-full transition-colors relative block',
-              event.show_guest_list ? 'bg-violet-500' : 'bg-zinc-700',
-            ].join(' ')}>
-              <span className={[
-                'absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform',
-                event.show_guest_list ? 'translate-x-6' : 'translate-x-0.5',
-              ].join(' ')} />
-            </span>
-          </button>
+          <Toggle checked={!!event.show_guest_list} onChange={v => set({ show_guest_list: v })} />
         </div>
 
         <div className="space-y-2">
