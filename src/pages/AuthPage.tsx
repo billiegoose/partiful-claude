@@ -1,8 +1,5 @@
 import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { motion } from 'framer-motion'
 
 export function AuthPage() {
@@ -16,7 +13,7 @@ export function AuthPage() {
     setLoading(true)
     const { error } = await signIn(email)
     if (error) {
-      alert(error.message) // simple error display for now
+      alert(error.message)
       setLoading(false)
       return
     }
@@ -25,45 +22,83 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black px-4">
+    <div style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'var(--p-bg)', padding: '0 20px', position: 'relative', overflow: 'hidden',
+    }}>
+      {/* Background blobs */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: `
+          radial-gradient(ellipse 60% 50% at 20% 30%, rgba(155,92,246,0.2) 0%, transparent 60%),
+          radial-gradient(ellipse 50% 40% at 80% 70%, rgba(255,60,110,0.15) 0%, transparent 60%)
+        `,
+      }} />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm space-y-6"
+        style={{
+          width: '100%', maxWidth: 360, position: 'relative', zIndex: 1,
+          background: 'var(--p-card)', border: '1px solid var(--p-border)',
+          borderRadius: 24, padding: 32,
+          boxShadow: '0 8px 40px rgba(0,0,0,0.4)',
+        }}
       >
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-white tracking-tight">partiful</h1>
-          <p className="text-zinc-400 text-sm">the fun way to throw a party</p>
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <h1 className="font-syne p-gradient-text" style={{ fontSize: '2.8rem', fontWeight: 800, marginBottom: 8 }}>
+            partiful
+          </h1>
+          <p style={{ color: 'var(--p-muted)', fontSize: 14 }}>the fun way to throw a party</p>
         </div>
+
         {sent ? (
-          <motion.p
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center text-zinc-300 bg-zinc-900 rounded-xl p-4"
+            style={{
+              textAlign: 'center', color: 'var(--p-text)',
+              background: 'rgba(155,92,246,0.1)',
+              border: '1px solid rgba(155,92,246,0.3)',
+              borderRadius: 16, padding: 20, fontSize: 15,
+            }}
           >
             ✨ Check your email for a magic link
-          </motion.p>
+          </motion.div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-zinc-300">Email</Label>
-              <Input
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <label htmlFor="email" style={{ color: 'var(--p-muted)', fontSize: 12, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
+                Email
+              </label>
+              <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 h-12"
+                style={{
+                  background: 'var(--p-card2)', border: '1px solid var(--p-border)',
+                  borderRadius: 12, padding: '0 16px', height: 48,
+                  color: 'var(--p-text)', fontSize: 15, outline: 'none',
+                  width: '100%',
+                }}
               />
             </div>
-            <Button
+            <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 text-base font-semibold"
+              className="p-gradient-btn"
+              style={{
+                width: '100%', height: 48, border: 'none', borderRadius: 12,
+                fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 700,
+                color: '#fff', cursor: loading ? 'wait' : 'pointer',
+                opacity: loading ? 0.7 : 1, marginTop: 4,
+              }}
             >
               {loading ? 'Sending...' : 'Send magic link'}
-            </Button>
+            </button>
           </form>
         )}
       </motion.div>
