@@ -7,6 +7,7 @@ import { RsvpButtons } from '../components/RsvpButtons'
 import { ActivityFeed } from '../components/ActivityFeed'
 import { GuestList } from '../components/GuestList'
 import type { RsvpButtonStyle, RsvpStatus } from '../sdk/types'
+import { getGoogleMapsUrl, getGoogleMapsEmbedUrl } from '@/lib/maps'
 
 export function EventPage() {
   const { token } = useParams<{ token: string }>()
@@ -173,17 +174,26 @@ export function EventPage() {
           </div>
 
           {event.location ? (
-            <a
-              href={`https://maps.google.com/maps?q=${encodeURIComponent(event.location)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-card p-card-hover"
-              style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 4, textDecoration: 'none', color: 'inherit' }}
-            >
-              <span style={{ fontSize: 20, marginBottom: 4 }}>📍</span>
-              <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' as const, color: 'var(--p-muted)' }}>Where</span>
-              <span style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.3 }}>{event.location}</span>
-            </a>
+            <div className="p-card p-card-hover" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <iframe
+                src={getGoogleMapsEmbedUrl(event.location)}
+                width="100%"
+                height="160"
+                style={{ border: 0, display: 'block', flexShrink: 0 }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Event location map"
+              />
+              <a
+                href={getGoogleMapsUrl(event.location)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 2, textDecoration: 'none', color: 'inherit' }}
+              >
+                <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' as const, color: 'var(--p-muted)' }}>Where</span>
+                <span style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.3 }}>{event.location}</span>
+              </a>
+            </div>
           ) : (
             <div className="p-card" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 4, opacity: 0.4 }}>
               <span style={{ fontSize: 20, marginBottom: 4 }}>📍</span>
