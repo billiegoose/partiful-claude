@@ -40,7 +40,7 @@ export function EventCard({ event }: { event: Event }) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={e => e.stopPropagation()}
-            style={{ fontSize: 13, color: 'var(--p-muted)', textDecoration: 'none', display: 'block' }}
+            style={{ fontSize: 13, color: 'var(--p-muted)', textDecoration: 'none', display: 'flex', alignItems: 'center', minHeight: 44 }}
           >
             {event.location}
           </a>
