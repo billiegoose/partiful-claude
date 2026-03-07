@@ -4,14 +4,14 @@ import { listPosts, createPost } from '../sdk/posts'
 import { subscribeToPosts, subscribeToBoops } from '../sdk/realtime'
 import type { EventPost, Boop } from '../sdk/types'
 
-interface Props {
-  eventId: string
-  userId: string | undefined
-}
+interface Props { eventId: string; userId: string | undefined }
+interface FloatingBoop extends Boop { _key: string }
 
-interface FloatingBoop extends Boop {
-  _key: string
-}
+const DOT_COLORS = [
+  { bg: 'var(--p-purple)', shadow: 'rgba(155,92,246,0.6)' },
+  { bg: 'var(--p-accent)', shadow: 'rgba(255,60,110,0.6)' },
+  { bg: 'var(--p-accent2)', shadow: 'rgba(255,140,66,0.6)' },
+]
 
 export function ActivityFeed({ eventId, userId }: Props) {
   const [posts, setPosts] = useState<EventPost[]>([])
@@ -21,23 +21,13 @@ export function ActivityFeed({ eventId, userId }: Props) {
 
   useEffect(() => {
     listPosts(eventId).then(setPosts)
-
-    const postChannel = subscribeToPosts(eventId, p => {
-      setPosts(prev => [...prev, p])
-    })
+    const postChannel = subscribeToPosts(eventId, p => setPosts(prev => [...prev, p]))
     const boopChannel = subscribeToBoops(eventId, b => {
       const key = `${b.id}-${Date.now()}`
-      const fb: FloatingBoop = { ...b, _key: key }
-      setFloatingBoops(prev => [...prev, fb])
-      setTimeout(() => {
-        setFloatingBoops(prev => prev.filter(x => x._key !== key))
-      }, 3000)
+      setFloatingBoops(prev => [...prev, { ...b, _key: key }])
+      setTimeout(() => setFloatingBoops(prev => prev.filter(x => x._key !== key)), 3000)
     })
-
-    return () => {
-      postChannel.unsubscribe()
-      boopChannel.unsubscribe()
-    }
+    return () => { postChannel.unsubscribe(); boopChannel.unsubscribe() }
   }, [eventId])
 
   const handlePost = async (e: React.FormEvent) => {
@@ -53,7 +43,7 @@ export function ActivityFeed({ eventId, userId }: Props) {
   }
 
   return (
-    <div className="space-y-4">
+    <div style={{ marginBottom: 10 }}>
       {/* Floating boops */}
       <AnimatePresence>
         {floatingBoops.map(b => (
@@ -62,54 +52,80 @@ export function ActivityFeed({ eventId, userId }: Props) {
             initial={{ opacity: 0, y: 20, scale: 0.5 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -60, scale: 0.5 }}
-            className="fixed bottom-32 right-6 text-5xl pointer-events-none z-50"
+            style={{ position: 'fixed', bottom: 128, right: 24, fontSize: 48, pointerEvents: 'none', zIndex: 50 }}
           >
             {b.emoji}
           </motion.div>
         ))}
       </AnimatePresence>
 
-      {/* Activity feed header */}
-      <h2 className="text-lg font-semibold text-white">Activity</h2>
+      <p className="font-syne" style={{
+        fontSize: 13, fontWeight: 700, letterSpacing: '0.1em',
+        textTransform: 'uppercase' as const, color: 'var(--p-muted)', marginBottom: 12,
+      }}>
+        Activity
+      </p>
 
-      {/* Posts list */}
-      <div className="space-y-3">
+      <div className="p-card" style={{ padding: 18, marginBottom: 10 }}>
         {posts.length === 0 && (
-          <p className="text-zinc-500 text-sm">No posts yet. Be the first!</p>
+          <p style={{ color: 'var(--p-muted)', fontSize: 13 }}>No posts yet. Be the first!</p>
         )}
         <AnimatePresence initial={false}>
-          {posts.map(post => (
-            <motion.div
-              key={post.id}
-              layout
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-zinc-900 rounded-xl p-4 text-white text-sm"
-            >
-              <p>{post.body}</p>
-              <p className="text-zinc-500 text-xs mt-2">
-                {new Date(post.created_at ?? '').toLocaleTimeString(undefined, {
-                  hour: 'numeric', minute: '2-digit'
-                })}
-              </p>
-            </motion.div>
-          ))}
+          {posts.map((post, i) => {
+            const dot = DOT_COLORS[i % DOT_COLORS.length]
+            return (
+              <motion.div
+                key={post.id}
+                layout
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{
+                  display: 'flex', gap: 12, padding: '10px 0',
+                  borderBottom: i < posts.length - 1 ? '1px solid var(--p-border)' : 'none',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <div style={{
+                  width: 8, height: 8, borderRadius: '50%',
+                  background: dot.bg, marginTop: 6, flexShrink: 0,
+                  boxShadow: `0 0 8px ${dot.shadow}`,
+                }} />
+                <div>
+                  <div style={{ fontSize: 13.5, color: '#ccc8e8', lineHeight: 1.5 }}>{post.body}</div>
+                  <div style={{ fontSize: 11, color: 'var(--p-muted)', marginTop: 2 }}>
+                    {new Date(post.created_at ?? '').toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })}
         </AnimatePresence>
       </div>
 
       {/* Post input */}
       {userId && (
-        <form onSubmit={handlePost} className="flex gap-2">
+        <form onSubmit={handlePost} style={{ display: 'flex', gap: 8 }}>
           <input
             value={newPost}
             onChange={e => setNewPost(e.target.value)}
             placeholder="Add to the feed..."
-            className="flex-1 bg-zinc-900 border border-zinc-700 rounded-full px-4 py-2 text-white text-sm min-h-[44px] outline-none focus:border-zinc-500"
+            style={{
+              flex: 1, background: 'var(--p-card)',
+              border: '1px solid var(--p-border)', borderRadius: 100,
+              padding: '0 16px', color: 'var(--p-text)', fontSize: 14,
+              minHeight: 44, outline: 'none',
+            }}
           />
           <button
             type="submit"
             disabled={posting || !newPost.trim()}
-            className="bg-white text-black rounded-full px-5 font-semibold text-sm min-h-[44px] disabled:opacity-50"
+            className="p-gradient-btn"
+            style={{
+              borderRadius: 100, padding: '0 20px',
+              fontWeight: 600, fontSize: 14, minHeight: 44,
+              border: 'none', color: '#fff', cursor: 'pointer',
+              opacity: posting || !newPost.trim() ? 0.5 : 1,
+            }}
           >
             Post
           </button>
