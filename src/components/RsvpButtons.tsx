@@ -20,7 +20,7 @@ export function RsvpButtons({ style, current, onRespond, isFull }: Props) {
         whileTap={disabledByFull ? undefined : { scale: 0.97 }}
         onClick={() => !disabledByFull && onRespond('yes')}
         disabled={disabledByFull}
-        className={disabledByFull ? '' : 'p-gradient-btn'}
+        className={[disabledByFull ? '' : 'p-gradient-btn', current === 'yes' ? 'ring-2' : ''].join(' ').trim()}
         style={{
           width: '100%', padding: '16px',
           border: 'none', borderRadius: 16,
