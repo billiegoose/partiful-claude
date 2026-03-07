@@ -241,10 +241,10 @@ export function EventEditPage() {
           >
             <span className={[
               'w-12 h-6 rounded-full transition-colors relative block',
-              event.is_plus_ones_allowed ? 'bg-white' : 'bg-zinc-700',
+              event.is_plus_ones_allowed ? 'bg-violet-500' : 'bg-zinc-700',
             ].join(' ')}>
               <span className={[
-                'absolute top-0.5 w-5 h-5 rounded-full bg-black transition-transform',
+                'absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform',
                 event.is_plus_ones_allowed ? 'translate-x-6' : 'translate-x-0.5',
               ].join(' ')} />
             </span>
@@ -261,10 +261,10 @@ export function EventEditPage() {
           >
             <span className={[
               'w-12 h-6 rounded-full transition-colors relative block',
-              event.show_guest_list ? 'bg-white' : 'bg-zinc-700',
+              event.show_guest_list ? 'bg-violet-500' : 'bg-zinc-700',
             ].join(' ')}>
               <span className={[
-                'absolute top-0.5 w-5 h-5 rounded-full bg-black transition-transform',
+                'absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform',
                 event.show_guest_list ? 'translate-x-6' : 'translate-x-0.5',
               ].join(' ')} />
             </span>
