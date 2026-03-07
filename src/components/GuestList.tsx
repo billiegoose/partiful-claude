@@ -188,6 +188,7 @@ function BoopButton({ avatarUrl, username, onBoop }: {
                 <button
                   key={emoji}
                   onClick={() => { onBoop(emoji); setOpen(false) }}
+                  onKeyDown={e => { if (e.key === 'Escape') setOpen(false) }}
                   style={{
                     fontSize: 22, width: 40, height: 40,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
