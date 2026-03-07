@@ -173,11 +173,17 @@ export function EventPage() {
           </div>
 
           {event.location ? (
-            <div className="p-card p-card-hover" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <a
+              href={`https://maps.google.com/maps?q=${encodeURIComponent(event.location)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-card p-card-hover"
+              style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 4, textDecoration: 'none', color: 'inherit' }}
+            >
               <span style={{ fontSize: 20, marginBottom: 4 }}>📍</span>
               <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' as const, color: 'var(--p-muted)' }}>Where</span>
               <span style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.3 }}>{event.location}</span>
-            </div>
+            </a>
           ) : (
             <div className="p-card" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 4, opacity: 0.4 }}>
               <span style={{ fontSize: 20, marginBottom: 4 }}>📍</span>
