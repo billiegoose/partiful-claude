@@ -3,9 +3,6 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../hooks/useAuth'
 import { getProfile, updateProfile } from '../sdk/profiles'
 import { uploadAvatar } from '../lib/uploadImage'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import type { Profile } from '../sdk/types'
 
 export function ProfilePage() {
@@ -19,10 +16,7 @@ export function ProfilePage() {
   useEffect(() => {
     if (!user) return
     getProfile(user.id).then(p => {
-      if (p) {
-        setProfile(p)
-        setUsername(p.username ?? '')
-      }
+      if (p) { setProfile(p); setUsername(p.username ?? '') }
     })
   }, [user?.id])
 
@@ -42,14 +36,8 @@ export function ProfilePage() {
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file || !user) return
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file.')
-      return
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      alert('Image must be under 10 MB.')
-      return
-    }
+    if (!file.type.startsWith('image/')) { alert('Please select an image file.'); return }
+    if (file.size > 10 * 1024 * 1024) { alert('Image must be under 10 MB.'); return }
     setUploading(true)
     try {
       const url = await uploadAvatar(file, user.id)
@@ -69,63 +57,87 @@ export function ProfilePage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-black text-white pb-24"
+      style={{ minHeight: '100vh', background: 'var(--p-bg)', color: 'var(--p-text)', paddingBottom: 96 }}
     >
-      <div className="max-w-lg mx-auto px-4 pt-8 space-y-6">
-        <h1 className="text-2xl font-bold">Profile</h1>
+      <div style={{ maxWidth: 480, margin: '0 auto', padding: '32px 20px 0', display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <h1 className="font-syne p-gradient-text" style={{ fontSize: '2rem', fontWeight: 800 }}>
+          Profile
+        </h1>
 
         {/* Avatar */}
-        <div className="flex flex-col items-center gap-3">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="relative w-24 h-24 rounded-full overflow-hidden bg-zinc-700 flex items-center justify-center min-h-[44px]"
             aria-label="Change profile photo"
+            style={{
+              position: 'relative', width: 96, height: 96,
+              borderRadius: '50%', overflow: 'hidden',
+              background: 'var(--p-card2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: 'none', cursor: 'pointer',
+              boxShadow: '0 0 0 3px var(--p-bg), 0 0 0 5px rgba(155,92,246,0.4)',
+            }}
           >
             {profile?.avatar_url ? (
-              <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+              <img src={profile.avatar_url} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
-              <span className="text-3xl font-bold text-white">{letter}</span>
+              <span className="font-syne" style={{ fontSize: 36, fontWeight: 800, color: 'var(--p-text)' }}>{letter}</span>
             )}
             {uploading && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-xs">
+              <div style={{
+                position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'var(--p-text)', fontSize: 12,
+              }}>
                 ...
               </div>
             )}
           </button>
-          <span className="text-zinc-500 text-sm">Tap to change photo</span>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleAvatarChange}
-          />
+          <span style={{ color: 'var(--p-muted)', fontSize: 13 }}>Tap to change photo</span>
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
         </div>
 
-        {/* Username */}
-        <div className="space-y-2">
-          <Label className="text-zinc-300">Username</Label>
-          <Input
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-            className="bg-zinc-900 border-zinc-700 text-white h-12"
-            placeholder="your name"
-          />
+        {/* Fields */}
+        <div className="p-card" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label style={{ color: 'var(--p-muted)', fontSize: 12, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
+              Username
+            </label>
+            <input
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              placeholder="your name"
+              style={{
+                background: 'var(--p-card2)', border: '1px solid var(--p-border)',
+                borderRadius: 12, padding: '0 16px', height: 48,
+                color: 'var(--p-text)', fontSize: 15, outline: 'none', width: '100%',
+              }}
+            />
+          </div>
+
+          <p style={{ color: 'var(--p-muted)', fontSize: 13 }}>{user?.email}</p>
+
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="p-gradient-btn"
+            style={{
+              width: '100%', height: 48, border: 'none', borderRadius: 12,
+              fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 700,
+              color: '#fff', cursor: saving ? 'wait' : 'pointer',
+              opacity: saving ? 0.7 : 1,
+            }}
+          >
+            {saving ? 'Saving...' : 'Save'}
+          </button>
         </div>
-
-        <p className="text-zinc-500 text-sm">{user?.email}</p>
-
-        <Button
-          onClick={handleSave}
-          disabled={saving}
-          className="w-full h-12 text-base font-semibold"
-        >
-          {saving ? 'Saving...' : 'Save'}
-        </Button>
 
         <button
           onClick={() => signOut()}
-          className="w-full text-zinc-500 text-sm min-h-[44px]"
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: 'var(--p-muted)', fontSize: 14, minHeight: 44,
+          }}
         >
           Sign out
         </button>
