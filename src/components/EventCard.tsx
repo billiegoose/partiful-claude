@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import type { Event } from '../sdk/types'
+import { getGoogleMapsUrl } from '@/lib/maps'
 
 export function EventCard({ event }: { event: Event }) {
   const navigate = useNavigate()
@@ -33,7 +34,17 @@ export function EventCard({ event }: { event: Event }) {
             weekday: 'short', month: 'short', day: 'numeric',
           })}
         </p>
-        {event.location && <p style={{ fontSize: 13, color: 'var(--p-muted)' }}>{event.location}</p>}
+        {event.location && (
+          <a
+            href={getGoogleMapsUrl(event.location)}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={e => e.stopPropagation()}
+            style={{ fontSize: 13, color: 'var(--p-muted)', textDecoration: 'none', display: 'block' }}
+          >
+            {event.location}
+          </a>
+        )}
       </div>
     </motion.div>
   )
