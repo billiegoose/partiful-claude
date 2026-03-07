@@ -88,12 +88,17 @@ export function EventPage() {
 
       {/* Hero */}
       {event.cover_image_url ? (
-        <div style={{ width: '100%', aspectRatio: '4/3', maxHeight: 420, overflow: 'hidden' }}>
+        <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', maxHeight: 420, overflow: 'hidden' }}>
           <img
             src={event.cover_image_url}
             alt={event.title}
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to top, var(--p-bg) 10%, transparent 50%)',
+            pointerEvents: 'none',
+          }} />
         </div>
       ) : (
         <div style={{
