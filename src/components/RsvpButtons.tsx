@@ -9,40 +9,69 @@ interface Props {
   isFull?: boolean
 }
 
-const STATUS_ORDER: RsvpStatus[] = ['yes', 'maybe', 'no']
-
 export function RsvpButtons({ style, current, onRespond, isFull }: Props) {
   const labels = getRsvpLabels(style)
+  const disabledByFull = !!isFull && current !== 'yes'
 
   return (
-    <div className="flex gap-3 flex-wrap">
-      {STATUS_ORDER.map(status => {
-        const isYes = status === 'yes'
-        const disabledByFull = isYes && !!isFull && current !== 'yes'
-        return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {/* Going — prominent gradient button */}
+      <motion.button
+        whileTap={disabledByFull ? undefined : { scale: 0.97 }}
+        onClick={() => !disabledByFull && onRespond('yes')}
+        disabled={disabledByFull}
+        className={disabledByFull ? '' : 'p-gradient-btn'}
+        style={{
+          width: '100%', padding: '16px',
+          border: 'none', borderRadius: 16,
+          fontFamily: "'Syne', sans-serif",
+          fontSize: 17, fontWeight: 700, letterSpacing: '0.01em',
+          cursor: disabledByFull ? 'not-allowed' : 'pointer',
+          position: 'relative', overflow: 'hidden',
+          color: '#fff',
+          ...(current === 'yes' ? {
+            background: 'linear-gradient(135deg, var(--p-accent) 0%, #ff6b35 50%, var(--p-accent2) 100%)',
+            boxShadow: '0 4px 30px rgba(255,60,110,0.4)',
+            outline: '2px solid white',
+            outlineOffset: 2,
+          } : disabledByFull ? {
+            background: 'rgba(255,255,255,0.05)',
+            color: 'var(--p-muted)',
+          } : {
+            background: 'linear-gradient(135deg, var(--p-accent) 0%, #ff6b35 50%, var(--p-accent2) 100%)',
+            boxShadow: '0 4px 30px rgba(255,60,110,0.4)',
+          }),
+        }}
+      >
+        {disabledByFull ? 'Full' : labels['yes']}
+      </motion.button>
+
+      {/* Maybe + No — small outlined pills in a row */}
+      <div style={{ display: 'flex', gap: 8 }}>
+        {(['maybe', 'no'] as RsvpStatus[]).map(status => (
           <motion.button
             key={status}
-            whileTap={disabledByFull ? undefined : { scale: 0.92 }}
-            whileHover={disabledByFull ? undefined : { scale: 1.04 }}
-            onClick={() => !disabledByFull && onRespond(status)}
-            disabled={disabledByFull}
-            className={[
-              'px-5 py-3 rounded-full text-sm font-semibold min-h-[44px]',
-              'transition-colors',
-              disabledByFull
-                ? 'bg-zinc-800 text-white opacity-50 cursor-not-allowed'
-                : 'cursor-pointer',
-              !disabledByFull && current === status
-                ? 'bg-white text-black ring-2 ring-white ring-offset-2 ring-offset-black'
-                : !disabledByFull
-                  ? 'bg-zinc-800 text-white hover:bg-zinc-700'
-                  : '',
-            ].filter(Boolean).join(' ')}
+            whileTap={{ scale: 0.92 }}
+            whileHover={{ scale: 1.04 }}
+            onClick={() => onRespond(status)}
+            style={{
+              flex: 1, padding: '10px 16px',
+              borderRadius: 100, fontSize: 14, fontWeight: 500,
+              minHeight: 44, cursor: 'pointer',
+              transition: 'background 0.15s',
+              border: current === status
+                ? '1px solid rgba(155,92,246,0.6)'
+                : '1px solid var(--p-border)',
+              background: current === status
+                ? 'rgba(155,92,246,0.2)'
+                : 'rgba(255,255,255,0.04)',
+              color: current === status ? '#c4a8ff' : 'var(--p-muted)',
+            }}
           >
-            {isYes && isFull && current !== 'yes' ? 'Full' : labels[status]}
+            {labels[status]}
           </motion.button>
-        )
-      })}
+        ))}
+      </div>
     </div>
   )
 }
