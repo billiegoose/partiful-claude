@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { useLocationAutocomplete } from '../hooks/useLocationAutocomplete'
 import { getEvent, createEvent, updateEvent } from '../sdk/events'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -65,6 +66,9 @@ export function EventEditPage() {
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const pendingEventIdRef = useRef<string>(crypto.randomUUID())
+  const [locationQuery, setLocationQuery] = useState('')
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const { suggestions } = useLocationAutocomplete(locationQuery)
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [authChecked, setAuthChecked] = useState(isNew) // new events skip the check
@@ -221,14 +225,39 @@ export function EventEditPage() {
           />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 relative">
           <Label className="text-zinc-300">Location</Label>
           <Input
             value={event.location ?? ''}
-            onChange={e => set({ location: e.target.value })}
+            onChange={e => {
+              set({ location: e.target.value })
+              setLocationQuery(e.target.value)
+              setShowSuggestions(true)
+            }}
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
             className="bg-zinc-900 border-zinc-700 text-white h-12"
             placeholder="123 Party St"
           />
+          {showSuggestions && suggestions.length > 0 && (
+            <ul className="absolute z-10 left-0 right-0 bg-zinc-800 border border-zinc-700 rounded-lg mt-1 overflow-hidden shadow-lg">
+              {suggestions.map((s, i) => (
+                <li key={i}>
+                  <button
+                    type="button"
+                    onMouseDown={() => {
+                      set({ location: s })
+                      setLocationQuery('')
+                      setShowSuggestions(false)
+                    }}
+                    className="w-full text-left px-4 py-3 text-sm text-white hover:bg-zinc-700 min-h-[44px]"
+                  >
+                    {s}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="space-y-2">
